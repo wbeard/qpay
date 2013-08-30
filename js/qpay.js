@@ -1,5 +1,8 @@
 ( function($) {
+
 	if ($ === undefined) throw new Error("jQuery not available");
+	if (csi === undefined) throw new Error("csi not available");
+	if (csi.csiConfig === undefined) throw new Error("csiConfig not available");
 	
 	var submitButton = $("[data-name=quick-pay]").length > 0 ? $("[data-name=quick-pay]") : null,
 		 nameField = $("[data-name=name]").length > 0 ? $("[name=name]") : null,
@@ -15,16 +18,38 @@
 		 
 	if(!submitButton) throw new Error("Could not find the submit button");
 	
+	paymentObj = {};
+	
 	submitButton.on("click", function(evt) {
-		if(requiredField) {
-			if (requiredField.val() === "") {
-				requiredField.addClass("error");
-				requiredField.each(function() {
-					_placeToolTip($(this), {
-						"message": "This field is required"
-					});			
-				});
+		if(_validate(evt)) {
+			if(csi.csiConfig.prehook.url) {
+				var csiServiceHook,
+					prehookCall = _remotePreHook();
+				prehookCall.then(
+					function(scsData) {
+						if(typeof scsData === "string") scsData = JSON.parse(scsData);
+						
+						$.extend(paymentObj , {
+							"transactionId": scsData.transactionId
+						});
+						
+						csiServiceHook = _csiServiceHook(paymentObj)
+					}, function(errData) {
+						/*new csi.Modal({
+						}).fire();*/
+						console.log("No url");
+					}
+				);
+			} else {
+				csiServiceHook = _csiServiceHook(paymentObj)
 			}
+			
+			csiServiceHook.then(
+				function(scsData) {
+				},
+				function(errData) {
+				}
+			);
 		}
 	});
 	
@@ -36,6 +61,21 @@
 		}
 		$(evt.target).removeClass("error");
 	});
+	
+	var _validate = function(evt) {
+		if(requiredField) {
+			if (requiredField.val() === "") {
+				requiredField.addClass("error");
+				requiredField.each(function() {
+					_placeToolTip($(this), {
+						"message": "This field is required"
+					});			
+				});
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	var _placeToolTip = function(node, options) {
 		var settings = $.extend({
@@ -53,7 +93,7 @@
 			$tooltip.addClass("tooltip").attr("rel", node.attr("data-name")).text(settings.message).css("top", tooltip_top_position).css("left", tooltip_left_position);
 		
 		$("body").append($tooltip);
-	}
+	},
 	
 	_removeToolTip = function(node) {
 		node.fadeOut({
@@ -61,6 +101,24 @@
 			"duration": 100
 		})
 	};
+	
+	_remotePreHook = function() {
+		return $.post(csi.csiConfig.prehook.url);
+	}
+	
+	_csiServiceHook = function(data) {
+		return $.post(csi.csiConfig.csiHook.service.url, data);
+	}
+	
+	_forwardToCsi = function(transactionId) {
+		var urlForward = _urlFormat(transactionId);
+		window.open(urlForward, "_self");
+	}
+	
+	_urlFormat = function(transactionId) {
+		var serviceHook = csi.csiConfig.csiHook.ui
+		return serviceHook.url + "ciid=" + serviceHook.ciid + "&ste=" + serviceHook.ste + "&transid=" + transactionId;
+	}
 	
 	
 }(jQuery));
