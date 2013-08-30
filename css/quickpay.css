@@ -1,0 +1,51 @@
+body {
+  position: relative;
+}
+[data-name=quick-pay] {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  width: 200px;
+  height: 55px;
+  display: block;
+  background: transparent url("../img/quickpay_sprite.png") no-repeat left center;
+}
+[data-name=quick-pay]:hover {
+  background-position: right center;
+}
+[data-name=quick-pay].small {
+  width: 100px;
+  height: 28px;
+  background-image: url("../img/quickpay_small_sprite.png");
+}
+[data-name=quick-pay].small:hover {
+  background-position: right center;
+}
+[data-name=quick-pay].large {
+  width: 375px;
+  height: 103px;
+  background-image: url("../img/quickpay_large_sprite.png");
+}
+[data-name=quick-pay].large:hover {
+  background-position: right center;
+}
+[data-name].error {
+  -webkit-box-shadow: 0 0 2px #e74c3c;
+  -moz-box-shadow: 0 0 2px #e74c3c;
+  -ms-box-shadow: 0 0 2px #e74c3c;
+  -o-box-shadow: 0 0 2px #e74c3c;
+  box-shadow: 0 0 2px #e74c3c;
+  outline: 1px solid #e74c3c;
+}
+.tooltip {
+  position: absolute;
+  font-family: sans-serif;
+  font-size: 12px;
+  color: #fff;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  background: #242424;
+}

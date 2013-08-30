@@ -1,0 +1,42 @@
+@import "vars"
+@import "mixins"
+@import "css3"
+
+body
+	position relative
+
+[data-name=quick-pay]
+	button_style_reset()
+	width 200px
+	height 55px
+	display block
+	background transparent url(reg_background) no-repeat left center
+	&:hover
+		background-position right center
+	&.small
+		width 100px
+		height 28px
+		background-image url(small_background)
+		&:hover
+			background-position right center
+	&.large
+		width 375px
+		height 103px
+		background-image url(large_background)
+		&:hover
+			background-position right center
+			
+[data-name]
+	&.error
+		box-shadow 0 0 2px error
+		outline 1px solid error
+
+.tooltip
+	position absolute
+	font-family sans-serif
+	font-size 12px
+	color white
+	top 0
+	left 0
+	padding 5px
+	background #242424
